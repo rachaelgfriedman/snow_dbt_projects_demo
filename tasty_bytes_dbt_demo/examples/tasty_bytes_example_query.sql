@@ -20,3 +20,6 @@ JOIN tasty_bytes_dbt_db.raw.order_header oh
 ON cl.customer_id = oh.customer_id
 GROUP BY cl.customer_id, cl.city, cl.country, cl.first_name,
 cl.last_name, cl.phone_number, cl.e_mail;
+
+
+SHOW DBT PROJECTS LIKE 'tasty%';

@@ -5,8 +5,6 @@ TABLES (
         PRIMARY KEY (order_detail_id)
 )
 
-RELATIONSHIPS ()
-
 DIMENSIONS (
     orders.order_date AS DATE(orders.order_ts)
         WITH SYNONYMS = ('date', 'day'),
