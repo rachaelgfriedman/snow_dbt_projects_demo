@@ -39,7 +39,7 @@ jobs:
       - run: snow connection test -x
 
       - name: Create a staging database using the PR number
-        run: snow sql -x -q "CREATE OR REPLACE DATABASE tasty_bytes_dbt_db_staging_pr_${{ github.event.number }} CLONE tasty_bytes_dbt_db"
+        run: snow sql -x -q "CREATE OR REPLACE DATABASE tasty_bytes_dbt_db_staging_pr_${{ github.event.number }} CLONE tasty_bytes_dbt_db_rf"
 
       # You can remove the "--source" flag if your dbt_project.yml is at root of your repo
       - name: Create a new tester dbt project object in ${{ vars.SNOWFLAKE_DATABASE }}.${{ vars.SNOWFLAKE_SCHEMA }}
