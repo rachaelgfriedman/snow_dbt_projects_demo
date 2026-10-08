@@ -3,19 +3,15 @@ tasty_bytes:
   outputs:
     dev:
       type: snowflake
-      account: 'not needed'
-      user: 'not needed'
-      role: accountadmin
-      database: tasty_bytes_dbt_db
+      role: transformer
+      database: tasty_bytes_dbt_db_rf
       schema: dev
-      warehouse: tasty_bytes_dbt_wh
+      warehouse: TRANSFORMING
       threads: 8
     prod:
       type: snowflake
-      account: 'not needed'
-      user: 'not needed'
-      role: accountadmin
-      database: tasty_bytes_dbt_db
+      role: TRANSFORMER
+      database: TASTY_BYTES_DBT_DB_RF
       schema: prod
-      warehouse: tasty_bytes_dbt_wh
+      warehouse: TRANSFORMING
       threads: 8
