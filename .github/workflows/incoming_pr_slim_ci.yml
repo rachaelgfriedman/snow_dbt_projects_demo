@@ -45,7 +45,7 @@ jobs:
       - name: Create a new tester dbt project object in ${{ vars.SNOWFLAKE_DATABASE }}.${{ vars.SNOWFLAKE_SCHEMA }}
         run: |
           snow dbt deploy tester_tasty_bytes_dbt_project_object_gh_action_pr_${{ github.event.number }} \
-            --source ./tasty_bytes \
+            --source ./tasty_bytes_dbt_demo \
             --no-auto-compile \
             --dbt-version 1.12.3 \
             -x
