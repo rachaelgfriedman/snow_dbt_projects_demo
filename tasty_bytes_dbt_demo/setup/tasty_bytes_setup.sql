@@ -323,3 +323,58 @@ ALTER WAREHOUSE tasty_bytes_dbt_wh SET WAREHOUSE_SIZE = SMALL;
 -- =============================================================================
 
 SELECT 'tasty_bytes_dbt_db setup is now complete' AS note;
+
+-- CI 
+
+
+  -- Create the CI role and grant it to your user
+CREATE ROLE IF NOT EXISTS DBT_CI_ROLE;
+GRANT ROLE DBT_CI_ROLE TO USER RACHAEL_FRIEDMAN;
+
+-- 1. USAGE on the database and schema containing the production dbt project object
+GRANT USAGE ON DATABASE TASTY_BYTES_DBT_DB_RF TO ROLE DBT_CI_ROLE;
+GRANT USAGE ON SCHEMA TASTY_BYTES_DBT_DB_RF.DEV TO ROLE DBT_CI_ROLE;
+
+-- 2. MONITOR on the production dbt project object (required to import artifacts / defer)
+GRANT MONITOR ON DBT PROJECT TASTY_BYTES_DBT_DB_RF.DEV.SNOW_DBT_PROJECTS_DEMO_RF
+  TO ROLE DBT_CI_ROLE;
+
+-- 3. Privileges to clone the source database (for per-PR zero-copy clones)
+GRANT CREATE DATABASE ON ACCOUNT TO ROLE DBT_CI_ROLE;
+
+-- 4. Access to the warehouse and production relations that deferred references resolve to
+GRANT USAGE ON WAREHOUSE TRANSFORMING TO ROLE DBT_CI_ROLE;
+GRANT USAGE ON SCHEMA TASTY_BYTES_DBT_DB_RF.PROD TO ROLE DBT_CI_ROLE;
+GRANT SELECT ON ALL TABLES IN SCHEMA TASTY_BYTES_DBT_DB_RF.PROD TO ROLE DBT_CI_ROLE;
+GRANT SELECT ON FUTURE TABLES IN SCHEMA TASTY_BYTES_DBT_DB_RF.PROD TO ROLE DBT_CI_ROLE;
+
+-- 5. Privileges to create, execute, and drop the tester dbt project object
+
+-- github service user 
+
+CREATE USER IF NOT EXISTS rf_github_actions_service_user
+  TYPE = SERVICE
+  WORKLOAD_IDENTITY = (
+    TYPE = OIDC
+    ISSUER = 'https://token.actions.githubusercontent.com',
+    SUBJECT = 'repo:rachaelgfriedman/snow_dbt_projects_demo:environment:prod'
+  )
+  DEFAULT_ROLE = DBT_CI_ROLE
+  COMMENT = 'Service user for GitHub Actions';
+
+GRANT ROLE DBT_CI_ROLE TO USER rf_github_actions_service_user;
+
+-- Ensure the subject matches exactly what GitHub sends
+ALTER USER github_actions_service_user SET
+  WORKLOAD_IDENTITY = (
+    TYPE = OIDC
+    ISSUER = 'https://token.actions.githubusercontent.com'
+    SUBJECT = 'repo:rachaelgfriedman@236442157/snow_dbt_projects_demo@1406448746:environment:prod'
+  );
+
+-- Grant DBT_CI_ROLE to the service user
+GRANT ROLE DBT_CI_ROLE TO USER rf_github_actions_service_user;
+
+-- Update default role to DBT_CI_ROLE
+ALTER USER rf_github_actions_service_user SET DEFAULT_ROLE = DBT_CI_ROLE;
+

@@ -2,16 +2,20 @@ tasty_bytes:
   target: dev
   outputs:
     dev:
-      type: snowflake
-      role: transformer
-      database: tasty_bytes_dbt_db_rf
+      account: '_'
+      database: "{{ env_var('DBT_DATABASE') }}"
       schema: dev
+      role: DBT_CI_ROLE
+      type: snowflake
       warehouse: TRANSFORMING
+      user: '_'
       threads: 8
     prod:
-      type: snowflake
-      role: TRANSFORMER
-      database: TASTY_BYTES_DBT_DB_RF
+      account: '_'
+      database: "{{ env_var('DBT_DATABASE') }}"
       schema: prod
+      role: DBT_CI_ROLE
+      type: snowflake
       warehouse: TRANSFORMING
+      user: '_'
       threads: 8
