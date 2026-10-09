@@ -56,7 +56,7 @@ jobs:
       # Builds changed models and runs their tests in DAG order, failing early if any upstream test breaks
       - name: Build and test dbt project in ${{ vars.SNOWFLAKE_DATABASE }}.${{ vars.SNOWFLAKE_SCHEMA }}
         run: |
-          snow dbt execute -x DBT_EXT_ACCESS\
+          snow dbt execute -x DBT_EXT_ACCESS \
             --import "SYSTEM\$DBT_GET_LAST_SUCCESSFUL_RUN_TARGET('${{ vars.SNOWFLAKE_DATABASE }}.${{ vars.SNOWFLAKE_SCHEMA }}.SNOW_DBT_PROJECTS_DEMO_RF') as state" \
             --env staging \
             --env-vars '{"DBT_DATABASE": "tasty_bytes_dbt_db_staging_pr_${{ github.event.number }}"}' \
